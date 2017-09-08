@@ -34,13 +34,6 @@ RUN \
     git vim zip mc curl \
     openjdk-7-jdk mesos=1.0.0* libc6
 
-# Add kafka-mesos & kafka
-COPY .docker/kafka* /opt/kafka-mesos/
-COPY ./docker-entrypoint.sh /docker-entrypoint.sh
+RUN ln -s /usr/local/lib/libmesos.so /usr/lib/mesos-1.0.0.so
 
 WORKDIR /opt/kafka-mesos
-EXPOSE 7000
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
-
-CMD ["scheduler"]

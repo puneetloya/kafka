@@ -464,7 +464,8 @@ class BrokerTest extends KafkaMesosTestCase {
         mounts = Seq(Mount("/a", "/b", MountMode.ReadWrite))
       )),
       javaCmd = "/usr/bin/java",
-      jvmOptions = "-Xms512m"
+      jvmOptions = "-Xms512m",
+      addtlUris = Seq("")
     )
 
     val read = JsonUtil.fromJson[Broker](JsonUtil.toJson(broker))

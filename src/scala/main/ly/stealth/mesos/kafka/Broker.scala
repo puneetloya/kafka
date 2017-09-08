@@ -369,7 +369,8 @@ object Broker {
   case class ExecutionOptions(
     container: Option[Container] = None,
     jvmOptions: String = "",
-    javaCmd: String = "exec java"
+    javaCmd: String = "exec java",
+    addtlUris: Seq[String] = Seq()
   )
 
   class Failover(_delay: Period = new Period("1m"), _maxDelay: Period = new Period("10m")) {

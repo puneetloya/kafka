@@ -51,6 +51,7 @@ object Config {
   var api: String = null
   var bindAddress: BindAddress = null
   var zk: String = null
+  var additionalUris: String = null
 
   def apiPort: Int = {
     val port = new URI(api).getPort

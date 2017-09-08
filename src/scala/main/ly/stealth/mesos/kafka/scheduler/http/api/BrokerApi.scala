@@ -97,13 +97,20 @@ trait BrokerApiComponentImpl extends BrokerApiComponent {
       @BothParam("javaCmd") javaCmd: String,
       @BothParam("containerType") containerTypeStr: String,
       @BothParam("containerImage") containerImage: String,
-      @BothParam("containerMounts") containerMounts: String
+      @BothParam("containerMounts") containerMounts: String,
+      @BothParam("additionalUris") additionalUris: String
     ): Response = {
       val add = operation == "add"
       val errors = mutable.Buffer[String]()
       if (broker == null) {
         errors.append("broker required")
       }
+
+      val uris = 
+        if (additionalUris != null && ! additionalUris.isEmpty)
+          additionalUris.split(',').toSeq
+        else
+          null
 
       val mounts = try {
         containerMounts match {
@@ -155,6 +162,9 @@ trait BrokerApiComponentImpl extends BrokerApiComponent {
         if (log4jOptions != null) broker.log4jOptions = log4jOptions.toMap
         if (jvmOptions != null)
           broker.executionOptions = broker.executionOptions.copy(jvmOptions = jvmOptions)
+
+        if (uris != null)
+          broker.executionOptions = broker.executionOptions.copy(addtlUris = uris)
 
         if (failoverDelay != null) broker.failover.delay = failoverDelay
         if (failoverMaxDelay != null) broker.failover.maxDelay = failoverMaxDelay

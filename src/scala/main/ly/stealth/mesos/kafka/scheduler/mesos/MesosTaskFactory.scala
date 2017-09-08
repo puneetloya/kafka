@@ -79,6 +79,13 @@ trait MesosTaskFactoryComponentImpl extends MesosTaskFactoryComponent {
           .setValue(Config.api + "/kafka/" + distInfo.kafkaDist.getName))
         .setValue(cmd)
 
+      if (broker.executionOptions.addtlUris != null) {
+          broker.executionOptions.addtlUris.foreach { u =>
+            commandBuilder
+              .addUris(CommandInfo.URI.newBuilder().setValue(u.toString))
+        }
+      }
+
       val executor = ExecutorInfo.newBuilder()
         .setExecutorId(ExecutorID.newBuilder.setValue(Broker.nextExecutorId(broker)))
         .setCommand(commandBuilder)
@@ -86,6 +93,7 @@ trait MesosTaskFactoryComponentImpl extends MesosTaskFactoryComponent {
 
       broker.executionOptions.container.foreach { c =>
         executor.setContainer(createContainerInfo(c, broker.id))
+  
 
       }
       executor.build()

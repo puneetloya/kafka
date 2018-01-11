@@ -505,6 +505,10 @@ trait BrokerCli {
         if (broker.options.nonEmpty) printLine("options: " + Strings.formatMap(broker.options), indent)
         if (broker.log4jOptions.nonEmpty) printLine("log4j-options: " + Strings.formatMap(broker.log4jOptions), indent)
         if (broker.executionOptions.jvmOptions != null) printLine("jvm-options: " + broker.executionOptions.jvmOptions, indent)
+        if (broker.executionOptions.addtlUris != null)
+          broker.executionOptions.addtlUris.foreach { u =>
+            printLine("uri: ${u.getValue}")
+          }
       }
       var failover = "failover:"
       failover += " delay:" + broker.failover.delay

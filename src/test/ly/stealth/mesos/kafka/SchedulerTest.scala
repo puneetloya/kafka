@@ -42,7 +42,8 @@ class SchedulerTest extends KafkaMesosTestCase {
     broker.cpus = 0.5
     broker.mem = 256
     broker.heap = 512
-    broker.executionOptions = ExecutionOptions(jvmOptions = "-Xms64m")
+    broker.executionOptions = ExecutionOptions(jvmOptions = "-Xms64m", 
+     addtlUris = Seq("http://foo", "file:///bar"))
 
     val offer = this.offer("id", "fw-id", "slave", "host", s"cpus:${broker.cpus}; mem:${broker.mem}; ports:1000", "")
     val reservation = broker.getReservation(offer)
@@ -59,6 +60,10 @@ class SchedulerTest extends KafkaMesosTestCase {
     assertTrue(cmd, cmd.contains("-Xmx" + broker.heap + "m"))
     assertTrue(cmd, cmd.contains(broker.executionOptions.jvmOptions))
     assertTrue(cmd, cmd.contains(Executor.getClass.getName.replace("$", "")))
+
+    for (uri <- broker.executionOptions.addtlUris) {
+      assertTrue(uri, command.getUrisList.exists(u => u.getValue == uri))
+    }
 
     // resources
     assertEquals(resources(s"cpus:${broker.cpus}; mem:${broker.mem}; ports:1000"), task.getResourcesList)

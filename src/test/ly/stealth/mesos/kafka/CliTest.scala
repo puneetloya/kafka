@@ -145,6 +145,22 @@ class CliTest extends KafkaMesosTestCase {
   }
 
   @Test
+  def broker_add_url: Unit = {
+    exec("broker add 0 --cpus=1 --mem=128 --container-image=test " +
+      "--java-cmd=/usr/bin/java" +
+      "--additional-uris=http://foo,file:///bar")
+
+    assertEquals(1, registry.cluster.getBrokers.size())
+    val broker = registry.cluster.getBroker(0)
+    assertEquals(
+      Some(Container(
+        ctype = ContainerType.Docker,
+        name = "test"
+      )), broker.executionOptions.container)
+    assertEquals(Seq("http://foo","file:///bar"), broker.executionOptions.addtlUris)
+  }
+
+  @Test
   def broker_update {
     val broker = registry.cluster.addBroker(new Broker(0))
 

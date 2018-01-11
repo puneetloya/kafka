@@ -465,7 +465,7 @@ class BrokerTest extends KafkaMesosTestCase {
       )),
       javaCmd = "/usr/bin/java",
       jvmOptions = "-Xms512m",
-      addtlUris = Seq("")
+      addtlUris = Seq("file:///a", "file:///b")
     )
 
     val read = JsonUtil.fromJson[Broker](JsonUtil.toJson(broker))

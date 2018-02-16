@@ -22,17 +22,21 @@ RUN \
     echo "Acquire::http::Proxy \"$APT_PROXY\";" > /etc/apt/apt.conf.d/90-apt-proxy.conf ; \
   fi
 
-# Add mesos repo
+# Add mesos and java repo
 RUN \
   apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E56151BF && \
-  echo deb http://repos.mesosphere.io/ubuntu trusty main > /etc/apt/sources.list.d/mesosphere.list
+  echo deb http://repos.mesosphere.io/ubuntu trusty main > /etc/apt/sources.list.d/mesosphere.list && \
+  echo 'deb http://ppa.launchpad.net/openjdk-r/ppa/ubuntu trusty main' >> /etc/apt/sources.list && \
+  echo 'deb-src http://ppa.launchpad.net/openjdk-r/ppa/ubuntu trusty main' >> /etc/apt/sources.list && \
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 86F44E2A
 
 # Install deps
 RUN \
   apt-get update && \
   apt-get install -qy \
     git vim zip mc curl \
-    openjdk-7-jdk mesos=1.0.0* libc6
+    openjdk-8-jre-headless mesos=1.0.0* libc6 && \
+    /var/lib/dpkg/info/ca-certificates-java.postinst configure
 
 # Add kafka-mesos & kafka
 COPY .docker/kafka* /opt/kafka-mesos/

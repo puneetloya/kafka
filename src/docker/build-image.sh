@@ -54,4 +54,5 @@ cp $base_dir/kafka-mesos*.sh $tmp_dir
 # build docker image
 sudo="sudo"
 if docker info &> /dev/null; then sudo=""; fi # skip sudo if possible
-$sudo docker build -t $docker_tag .
+$sudo docker build -t $docker_tag-scheduler .
+$sudo docker build -f Dockerfile-broker -t $docker_tag-broker .

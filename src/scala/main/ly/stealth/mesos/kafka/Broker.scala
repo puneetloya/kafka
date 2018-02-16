@@ -55,6 +55,7 @@ class Broker(val id: Int = 0) {
 
   var executionOptions: ExecutionOptions = ExecutionOptions()
 
+  var brokerEnv: Map[String, String] = Map()
   @volatile var task: Broker.Task = _
   @volatile var lastTask: Broker.Task = _
 
@@ -370,7 +371,8 @@ object Broker {
     container: Option[Container] = None,
     jvmOptions: String = "",
     javaCmd: String = "exec java",
-    addtlUris: Seq[String] = Seq()
+    addtlUris: Seq[String] = Seq(),
+    brokerCommand: String = null
   )
 
   class Failover(_delay: Period = new Period("1m"), _maxDelay: Period = new Period("10m")) {

@@ -198,6 +198,8 @@ trait BrokerCli {
       val containerImageArg = parser.accepts("container-image", "the container image to launch the broker in (if any)" ).withRequiredArg().ofType(classOf[String])
       val containerMountArg = parser.accepts("container-mounts", "a comma separated list of host:container[:mode][,...] tuples to mount into the launched container.").withRequiredArg().ofType(classOf[String])
       val additionalUrisArg = parser.accepts("additional-uris", "a comma separated list of uris to append to mesos task, for instance, docker credentials.").withRequiredArg().ofType(classOf[String])
+      parser.accepts("broker-env", "a list of env variables to pass to brokers").withRequiredArg()
+      parser.accepts("broker-cmd", "the command to run for broker startup, will override java-cmd and heap parameters").withRequiredArg()
 
       if (help) {
         val cmd = if (add) "add" else "update"
@@ -241,6 +243,8 @@ trait BrokerCli {
       val containerImage = options.valueOf(containerImageArg)
       val containerMounts = options.valueOf(containerMountArg)
       val additionalUris = options.valueOf(additionalUrisArg)
+      val brokerEnv = options.valueOf("broker-env").asInstanceOf[String]
+      val brokerCmd = options.valueOf("broker-cmd").asInstanceOf[String]
 
       val params = new util.LinkedHashMap[String, String]
       params.put("broker", expr)
@@ -268,6 +272,8 @@ trait BrokerCli {
       if (containerImage != null) params.put("containerImage", containerImage)
       if (containerMounts != null) params.put("containerMounts", containerMounts)
       if (additionalUris != null) params.put("additionalUris", additionalUris)
+      if (brokerEnv != null) params.put("brokerEnv", optionsOrFile(brokerEnv))
+      if (brokerCmd != null) params.put("brokerCmd", brokerCmd)
 
       val brokers =
         try { sendRequestObj[BrokerStatusResponse]("/broker/" + (if (add) "add" else "update"), params).brokers }

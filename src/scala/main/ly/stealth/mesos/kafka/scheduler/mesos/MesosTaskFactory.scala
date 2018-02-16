@@ -49,7 +49,10 @@ trait MesosTaskFactoryComponentImpl extends MesosTaskFactoryComponent {
       if (broker.executionOptions.container.isDefined) {
         cmd += "cd $MESOS_SANDBOX && "
       }
-      cmd += s"${broker.executionOptions.javaCmd} -cp ${distInfo.jar.getName} -Xmx${broker.heap}m"
+      if (broker.executionOptions.brokerCommand != null)
+        cmd += broker.executionOptions.brokerCommand
+      else
+        cmd += s"${broker.executionOptions.javaCmd} -cp ${distInfo.jar.getName} -Xmx${broker.heap}m"
       if (broker.executionOptions.jvmOptions != null)
         cmd += " " + broker.executionOptions.jvmOptions.replace("$id", broker.id.toString)
 
@@ -66,6 +69,11 @@ trait MesosTaskFactoryComponentImpl extends MesosTaskFactoryComponent {
       val env = new mutable.HashMap[String, String]()
       env("MESOS_SYSLOG_TAG") = Config.frameworkName + "-" + broker.id
       if (broker.syslog) env("MESOS_SYSLOG") = "true"
+
+      if (broker.brokerEnv != null) {
+        for((name, value) <- broker.brokerEnv)
+          env(name) = value
+      }
 
       val envBuilder = Environment.newBuilder()
       for ((name, value) <- env)
@@ -93,7 +101,7 @@ trait MesosTaskFactoryComponentImpl extends MesosTaskFactoryComponent {
 
       broker.executionOptions.container.foreach { c =>
         executor.setContainer(createContainerInfo(c, broker.id))
-  
+
 
       }
       executor.build()
